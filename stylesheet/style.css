@@ -1,0 +1,42 @@
+.calendar-wrapper {
+  width: 210px;
+}
+
+.calendar-header {
+  height: 30px;
+  font-size: 1.5em;
+}
+
+.calendar-header-left {
+  width: 20%;
+  float: left;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.calendar-header-center {
+  width: 60%;
+  float: left;
+  text-align: center;
+}
+
+.calendar-header-right {
+  width: 20%;
+  float: left;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.calendar-table {
+  width: 100%;
+  background-color: brown;
+  cursor: pointer;
+  color: white;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.calendar-table tr td:hover {
+  background-color: black;
+  border-radius: 40%;
+}
