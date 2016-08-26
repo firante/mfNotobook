@@ -1,17 +1,27 @@
 <div class="calendar-wrapper">
   <div class="calendar-header">	
-    <div class="calendar-header-left"> &lt; </div>
-    <div class="calendar-header-center"> center </div> 
-    <div class="calendar-header-right"> &gt; </div> 
+    <div class="calendar-header-left" ng-click="mDecr()"> &lt; </div>
+    <div class="calendar-header-center" ng-click="toMonths()"> {{ currentPeriod }} </div> 
+    <div class="calendar-header-right" ng-click="mIncr()"> &gt; </div> 
   </div>
   <div class="calendar-body">
     <table class="calendar-table">
-      <tr ng-repeat="row in calendar">
-	<td ng-repeat="cell in row">
+      
+      <tr ng-if="matrixType==='day'">
+	<td ng-repeat="cell in weekDay">
 	  {{cell}}
 	</td>
       </td>
-      
+      <tr ng-repeat='week in body' ng-if="matrixType==='day'">
+  	<td ng-repeat='day in week'>
+	  {{day.day}}
+        </td>
+      </tr> 
+      <tr ng-repeat='row in body' ng-if="matrixType==='month'"> 
+      <td ng-repeat='cell in row'>
+	  {{cell}}
+	</td>
+      </tr>
     </table>
   </div>
 </div>

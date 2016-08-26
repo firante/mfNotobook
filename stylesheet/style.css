@@ -12,6 +12,7 @@
   float: left;
   text-align: center;
   padding-top: 2px;
+  cursor: pointer;
 }
 
 .calendar-header-center {
@@ -24,8 +25,18 @@
   width: 20%;
   float: left;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 2px; 
+  cursor: pointer;
 }
+
+.calendar-header-right:hover {
+  background-color: green;
+}
+
+.calendar-header-left:hover {
+  background-color: green;
+}
+
 
 .calendar-table {
   width: 100%;

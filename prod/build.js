@@ -47,20 +47,69 @@ var mf =
 
 	'use strict';
 
-	var angular = __webpack_require__(1);
-	var moment = __webpack_require__(3);
-	var dataHelper = __webpack_require__(107);
-	angular.module("mfNotebook", []).directive("mfCalendar", function () {
+	var _angular = __webpack_require__(1);
+
+	var _angular2 = _interopRequireDefault(_angular);
+
+	var _moment = __webpack_require__(3);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	var _dataHelper = __webpack_require__(107);
+
+	var _dataHelper2 = _interopRequireDefault(_dataHelper);
+
+	__webpack_require__(108);
+
+	__webpack_require__(109);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	_angular2.default.module("mfNotebook", ['mfNotebook.constant', 'mfNotebook.service']).directive("mfCalendar", function () {
 	  return {
 	    restrict: "EA",
 	    templateUrl: "dev/templates/template-calendar.html",
 	    controller: "mfCalendarController"
 	  };
-	}).controller("mfCalendarController", function ($scope) {
-	  $scope.calendar = [];
-	  var calendar = $scope.calendar;
-	  calendar.push(dataHelper.getWeek);
-	});
+	}).controller("mfCalendarController", ['$scope', 'getWeeks', 'currentDate', function ($scope, getWeeks, currentDate) {
+	  $scope.weekDay = getWeeks;
+	  $scope.currentPeriod = currentDate.getMonthAsString();
+	  $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	  $scope.matrixType = 'day';
+	  $scope.isDay = function () {
+	    if ($scope.matrixType === 'day') {
+	      return true;
+	    } else {
+	      return false;
+	    }
+	  };
+	  $scope.isMonth = function () {
+	    console.log(2222);
+	    if ($scope.matrixType === 'month') {
+	      console.log('true');
+	      return true;
+	    } else {
+	      console.log('false');
+	      return false;
+	    }
+	  };
+	  $scope.mIncr = function () {
+	    currentDate.incrementMonth();
+	    $scope.currentPeriod = currentDate.getMonthAsString();
+	    $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	  };
+	  $scope.mDecr = function () {
+	    currentDate.decrementMonth();
+	    $scope.currentPeriod = currentDate.getMonthAsString();
+	    $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	  };
+	  $scope.toMonths = function () {
+	    $scope.currentPeriod = currentDate.getYear();
+	    $scope.body = _dataHelper2.default.getMonthMatrix();
+	    $scope.matrixType = 'month';
+	    alert(1111);
+	  };
+	}]);
 
 /***/ },
 /* 1 */
@@ -27033,11 +27082,116 @@ var mf =
 
 /***/ },
 /* 107 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	exports.getWeek = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+	var _angular = __webpack_require__(1);
+
+	var _angular2 = _interopRequireDefault(_angular);
+
+	var _moment = __webpack_require__(3);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.getDayMatrix = function (dateValue) {
+	  var result = [];
+	  var date = (0, _moment2.default)(dateValue).startOf('month');
+
+	  var day = date.day();
+	  if (day === 0) {
+	    date.add(-7, 'day');
+	  } else {
+	    date.add(-day, 'day');
+	  }
+	  for (var i = 0; i < 6; i++) {
+	    var row = [];
+	    for (var j = 0; j < 7; j++) {
+	      var obj = {
+	        day: date.date(),
+	        month: date.get('month') === (0, _moment2.default)().get('month') ? "thisMonth" : "nonThisMonth"
+	      };
+	      row.push(obj);
+	      date.add(1, 'day');
+	    }
+	    result.push(row);
+	  }
+	  return result;
+	};
+
+	exports.getMonthMatrix = function () {
+	  var result = [['JAN', 'FEB', 'MAR', 'APR'], ['MAY', 'JUN', 'JUL', 'AUG'], ['SEP', 'OCT', 'NOV', 'DEC']];
+	  return result;
+	};
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _angular = __webpack_require__(1);
+
+	var _angular2 = _interopRequireDefault(_angular);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	_angular2.default.module('mfNotebook.constant', []).value('getWeeks', ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']);
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _angular = __webpack_require__(1);
+
+	var _angular2 = _interopRequireDefault(_angular);
+
+	var _moment = __webpack_require__(3);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	_angular2.default.module('mfNotebook.service', []).factory('currentDate', function () {
+	     var currentDate = (0, _moment2.default)();
+
+	     return {
+	          getDay: function getDay() {
+	               return currentDate.date();
+	          },
+	          getMonth: function getMonth() {
+	               return currentDate.get('month');
+	          },
+	          getMonthAsString: function getMonthAsString() {
+	               return currentDate.format('MMMM');
+	          },
+	          getYear: function getYear() {
+	               return currentDate.get('year');
+	          },
+	          getCurrentDate: function getCurrentDate() {
+	               return currentDate.format();
+	          },
+	          setDate: function setDate(date) {
+	               currentDate.set('date', date);
+	          },
+	          setMonth: function setMonth(month) {
+	               currentDate.set('month', month);
+	          },
+	          setYear: function setYear(year) {
+	               currentDate.set('year', year);
+	          },
+	          incrementMonth: function incrementMonth() {
+	               currentDate.add(1, 'month');
+	          },
+	          decrementMonth: function decrementMonth() {
+	               currentDate.add(-1, 'month');
+	          }
+	     };
+	});
 
 /***/ }
 /******/ ]);
