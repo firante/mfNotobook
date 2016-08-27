@@ -84,30 +84,32 @@ var mf =
 	    }
 	  };
 	  $scope.isMonth = function () {
-	    console.log(2222);
 	    if ($scope.matrixType === 'month') {
-	      console.log('true');
 	      return true;
 	    } else {
-	      console.log('false');
 	      return false;
 	    }
 	  };
 	  $scope.mIncr = function () {
-	    currentDate.incrementMonth();
-	    $scope.currentPeriod = currentDate.getMonthAsString();
-	    $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	    var isDay = $scope.matrixType === 'day';
+	    isDay ? currentDate.incrementMonth() : currentDate.incrementYear();
+	    $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
+	    if (isDay) {
+	      $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	    }
 	  };
 	  $scope.mDecr = function () {
-	    currentDate.decrementMonth();
-	    $scope.currentPeriod = currentDate.getMonthAsString();
-	    $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	    var isDay = $scope.matrixType === 'day';
+	    isDay ? currentDate.decrementMonth() : currentDate.decrementYear();
+	    $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
+	    if (isDay) {
+	      $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	    }
 	  };
 	  $scope.toMonths = function () {
 	    $scope.currentPeriod = currentDate.getYear();
 	    $scope.body = _dataHelper2.default.getMonthMatrix();
 	    $scope.matrixType = 'month';
-	    alert(1111);
 	  };
 	}]);
 
@@ -27189,6 +27191,12 @@ var mf =
 	          },
 	          decrementMonth: function decrementMonth() {
 	               currentDate.add(-1, 'month');
+	          },
+	          incrementYear: function incrementYear() {
+	               currentDate.add(1, 'year');
+	          },
+	          decrementYear: function decrementYear() {
+	               currentDate.add(-1, 'year');
 	          }
 	     };
 	});
