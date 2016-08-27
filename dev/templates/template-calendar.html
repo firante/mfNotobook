@@ -1,27 +1,27 @@
 <div class="calendar-wrapper">
-  <div class="calendar-header">	
-    <div class="calendar-header-left" ng-click="mDecr()"> &lt; </div>
-    <div class="calendar-header-center" ng-click="toMonths()"> {{ currentPeriod }} </div> 
-    <div class="calendar-header-right" ng-click="mIncr()"> &gt; </div> 
+  <div class="calendar-header">
+    <div class="calendar-header-left" ng-click="decr()"> &lt; </div>
+    <div class="calendar-header-center" ng-click="toMonths()"> {{ currentPeriod }} </div>
+    <div class="calendar-header-right" ng-click="incr()"> &gt; </div>
   </div>
   <div class="calendar-body">
     <table class="calendar-table">
-      
       <tr ng-if="matrixType==='day'">
-	<td ng-repeat="cell in weekDay">
-	  {{cell}}
-	</td>
-      </td>
+      	<td ng-repeat="cell in weekDay">
+      	  {{cell}}
+      	</td>
+      </tr>
       <tr ng-repeat='week in body' ng-if="matrixType==='day'">
-  	<td ng-repeat='day in week'>
-	  {{day.day}}
+  	    <td ng-click="selectDate(day.day)" ng-repeat='day in week'>
+	        {{day.day}}
         </td>
-      </tr> 
-      <tr ng-repeat='row in body' ng-if="matrixType==='month'"> 
-      <td ng-repeat='cell in row'>
-	  {{cell}}
-	</td>
+      </tr>
+      <tr ng-repeat='row in body' ng-if="matrixType==='month' || matrixType==='year'">
+        <td ng-click="selectDate(cell)" ng-repeat='cell in row'>
+	        {{cell}}
+	      </td>
       </tr>
     </table>
+    <span>{{day}} - {{month}} - {{year}}</span>
   </div>
 </div>

@@ -1,6 +1,7 @@
 import angular from 'angular';
 import moment from 'moment';
-import DateHelper from "./helpers/dataHelper.js";
+import { getDayMatrix } from "./helpers/dataHelper.js";
+import { updateDateScope, increment, decrement, toMonthMatrix, toYearMatrix, updateDayScope } from "./helpers/eventsHelper.js";
 import "./helpers/constants.js";
 import "./helpers/services.js";
 angular.module("mfNotebook", ['mfNotebook.constant', 'mfNotebook.service'])
@@ -12,17 +13,14 @@ angular.module("mfNotebook", ['mfNotebook.constant', 'mfNotebook.service'])
     };
   })
   .controller("mfCalendarController", ['$scope', 'getWeeks', 'currentDate', function($scope, getWeeks, currentDate) {
+    $scope.$watch(function () {
+      return currentDate.getDay() + currentDate.getMonth() + currentDate.getYear();
+    }, function () {
+      updateDateScope($scope, currentDate)
+    });
     $scope.weekDay = getWeeks;
-    $scope.currentPeriod = currentDate.getMonthAsString();
-    $scope.body = DateHelper.getDayMatrix(currentDate.getCurrentDate());
+    updateDayScope($scope, currentDate);
     $scope.matrixType = 'day';
-    $scope.isDay = function () {
-      if ($scope.matrixType === 'day') {
-        return true;
-      } else {
-	      return false;
-      }
-    };
     $scope.isMonth = function () {
       if ($scope.matrixType === 'month') {
         return true;
@@ -30,25 +28,30 @@ angular.module("mfNotebook", ['mfNotebook.constant', 'mfNotebook.service'])
 	      return false;
       }
     };
-    $scope.mIncr = function () {
-      let isDay = $scope.matrixType === 'day';
-      isDay ? currentDate.incrementMonth() : currentDate.incrementYear();
-      $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
-      if (isDay) {
-        $scope.body = DateHelper.getDayMatrix(currentDate.getCurrentDate());
-      }
+    $scope.incr = function () {
+      increment ($scope, currentDate);
     };
-    $scope.mDecr = function () {
-      let isDay = $scope.matrixType === 'day';
-      isDay ? currentDate.decrementMonth() : currentDate.decrementYear();
-      $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
-      if (isDay) {
-        $scope.body = DateHelper.getDayMatrix(currentDate.getCurrentDate());
-      }
+    $scope.decr = function () {
+      decrement ($scope, currentDate);
     };
     $scope.toMonths = function () {
-      $scope.currentPeriod = currentDate.getYear();
-      $scope.body = DateHelper.getMonthMatrix();
-      $scope.matrixType = 'month';
+      if ($scope.matrixType === 'day') {
+        toMonthMatrix ($scope, currentDate);
+      } else if ($scope.matrixType === 'month') {
+        toYearMatrix ($scope, currentDate.getYear());
+      }
+    };
+    $scope.selectDate = function (value) {
+      if ($scope.matrixType === 'day') {
+        currentDate.setDate(value);
+      } else if ($scope.matrixType === 'month') {
+        currentDate.setMonth(value);
+        updateDayScope($scope, currentDate);
+        $scope.matrixType = 'day';
+      } else {
+        currentDate.setYear(value);
+        toMonthMatrix ($scope, currentDate);
+        $scope.matrixType = 'month';
+      }
     };
   }]);

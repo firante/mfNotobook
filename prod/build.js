@@ -57,11 +57,11 @@ var mf =
 
 	var _dataHelper = __webpack_require__(107);
 
-	var _dataHelper2 = _interopRequireDefault(_dataHelper);
-
-	__webpack_require__(108);
+	var _eventsHelper = __webpack_require__(108);
 
 	__webpack_require__(109);
+
+	__webpack_require__(110);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -72,17 +72,14 @@ var mf =
 	    controller: "mfCalendarController"
 	  };
 	}).controller("mfCalendarController", ['$scope', 'getWeeks', 'currentDate', function ($scope, getWeeks, currentDate) {
+	  $scope.$watch(function () {
+	    return currentDate.getDay() + currentDate.getMonth() + currentDate.getYear();
+	  }, function () {
+	    (0, _eventsHelper.updateDateScope)($scope, currentDate);
+	  });
 	  $scope.weekDay = getWeeks;
-	  $scope.currentPeriod = currentDate.getMonthAsString();
-	  $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
+	  (0, _eventsHelper.updateDayScope)($scope, currentDate);
 	  $scope.matrixType = 'day';
-	  $scope.isDay = function () {
-	    if ($scope.matrixType === 'day') {
-	      return true;
-	    } else {
-	      return false;
-	    }
-	  };
 	  $scope.isMonth = function () {
 	    if ($scope.matrixType === 'month') {
 	      return true;
@@ -90,26 +87,31 @@ var mf =
 	      return false;
 	    }
 	  };
-	  $scope.mIncr = function () {
-	    var isDay = $scope.matrixType === 'day';
-	    isDay ? currentDate.incrementMonth() : currentDate.incrementYear();
-	    $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
-	    if (isDay) {
-	      $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
-	    }
+	  $scope.incr = function () {
+	    (0, _eventsHelper.increment)($scope, currentDate);
 	  };
-	  $scope.mDecr = function () {
-	    var isDay = $scope.matrixType === 'day';
-	    isDay ? currentDate.decrementMonth() : currentDate.decrementYear();
-	    $scope.currentPeriod = isDay ? currentDate.getMonthAsString() : currentDate.getYear();
-	    if (isDay) {
-	      $scope.body = _dataHelper2.default.getDayMatrix(currentDate.getCurrentDate());
-	    }
+	  $scope.decr = function () {
+	    (0, _eventsHelper.decrement)($scope, currentDate);
 	  };
 	  $scope.toMonths = function () {
-	    $scope.currentPeriod = currentDate.getYear();
-	    $scope.body = _dataHelper2.default.getMonthMatrix();
-	    $scope.matrixType = 'month';
+	    if ($scope.matrixType === 'day') {
+	      (0, _eventsHelper.toMonthMatrix)($scope, currentDate);
+	    } else if ($scope.matrixType === 'month') {
+	      (0, _eventsHelper.toYearMatrix)($scope, currentDate.getYear());
+	    }
+	  };
+	  $scope.selectDate = function (value) {
+	    if ($scope.matrixType === 'day') {
+	      currentDate.setDate(value);
+	    } else if ($scope.matrixType === 'month') {
+	      currentDate.setMonth(value);
+	      (0, _eventsHelper.updateDayScope)($scope, currentDate);
+	      $scope.matrixType = 'day';
+	    } else {
+	      currentDate.setYear(value);
+	      (0, _eventsHelper.toMonthMatrix)($scope, currentDate);
+	      $scope.matrixType = 'month';
+	    }
 	  };
 	}]);
 
@@ -27088,6 +27090,13 @@ var mf =
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getDayMatrix = getDayMatrix;
+	exports.getMonthMatrix = getMonthMatrix;
+	exports.getYearMatrix = getYearMatrix;
+
 	var _angular = __webpack_require__(1);
 
 	var _angular2 = _interopRequireDefault(_angular);
@@ -27098,7 +27107,7 @@ var mf =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.getDayMatrix = function (dateValue) {
+	function getDayMatrix(dateValue) {
 	  var result = [];
 	  var date = (0, _moment2.default)(dateValue).startOf('month');
 
@@ -27121,15 +27130,99 @@ var mf =
 	    result.push(row);
 	  }
 	  return result;
+	}
+
+	function getMonthMatrix() {
+	  var result = [['JAN', 'FEB', 'MAR', 'APR'], ['MAY', 'JUN', 'JUL', 'AUG'], ['SEP', 'OCT', 'NOV', 'DEC']];
+	  return result;
 	};
 
-	exports.getMonthMatrix = function () {
-	  var result = [['JAN', 'FEB', 'MAR', 'APR'], ['MAY', 'JUN', 'JUL', 'AUG'], ['SEP', 'OCT', 'NOV', 'DEC']];
+	function getYearMatrix(year) {
+	  var result = [];
+	  year = year - 12;
+	  for (var i = 0; i < 5; i++) {
+	    var row = [];
+	    for (var j = 0; j < 5; j++) {
+	      row.push(year);
+	      year++;
+	    }
+	    result.push(row);
+	  }
 	  return result;
 	};
 
 /***/ },
 /* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.increment = increment;
+	exports.decrement = decrement;
+	exports.toMonthMatrix = toMonthMatrix;
+	exports.toYearMatrix = toYearMatrix;
+	exports.updateDayScope = updateDayScope;
+	exports.updateDateScope = updateDateScope;
+
+	var _dataHelper = __webpack_require__(107);
+
+	var _dataHelper2 = _interopRequireDefault(_dataHelper);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function increment($scope, currentDate) {
+
+	  if ($scope.matrixType === 'day') {
+	    currentDate.incrementMonth();
+	    updateDayScope($scope, currentDate);
+	  } else if ($scope.matrixType === 'month') {
+	    currentDate.incrementYear();
+	    $scope.currentPeriod = currentDate.getYear();
+	  } else {
+	    toYearMatrix($scope, $scope.body[4][4] + 12);
+	  }
+	};
+
+	function decrement($scope, currentDate) {
+	  if ($scope.matrixType === 'day') {
+	    currentDate.decrementMonth();
+	    updateDayScope($scope, currentDate);
+	  } else if ($scope.matrixType === 'month') {
+	    currentDate.decrementYear();
+	    $scope.currentPeriod = currentDate.getYear();
+	  } else {
+	    toYearMatrix($scope, $scope.body[0][0] - 12);
+	  }
+	};
+
+	function toMonthMatrix($scope, currentDate) {
+	  $scope.currentPeriod = currentDate.getYear();
+	  $scope.body = (0, _dataHelper.getMonthMatrix)();
+	  $scope.matrixType = 'month';
+	};
+
+	function toYearMatrix($scope, year) {
+	  $scope.currentPeriod = year - 12 + " - " + (year + 12);
+	  $scope.body = (0, _dataHelper.getYearMatrix)(year);
+	  $scope.matrixType = 'year';
+	};
+
+	function updateDayScope($scope, currentDate) {
+	  $scope.currentPeriod = currentDate.getMonthAsString();
+	  $scope.body = (0, _dataHelper.getDayMatrix)(currentDate.getCurrentDate());
+	};
+
+	function updateDateScope($scope, currentDate) {
+	  $scope.day = currentDate.getDay();
+	  $scope.month = currentDate.getMonthAsString();
+	  $scope.year = currentDate.getYear();
+	}
+
+/***/ },
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27143,7 +27236,7 @@ var mf =
 	_angular2.default.module('mfNotebook.constant', []).value('getWeeks', ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']);
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27178,13 +27271,13 @@ var mf =
 	               return currentDate.format();
 	          },
 	          setDate: function setDate(date) {
-	               currentDate.set('date', date);
+	               currentDate.date(date);
 	          },
 	          setMonth: function setMonth(month) {
-	               currentDate.set('month', month);
+	               currentDate.month(month);
 	          },
 	          setYear: function setYear(year) {
-	               currentDate.set('year', year);
+	               currentDate.year(year);
 	          },
 	          incrementMonth: function incrementMonth() {
 	               currentDate.add(1, 'month');

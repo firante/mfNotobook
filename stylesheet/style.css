@@ -19,6 +19,7 @@
   width: 60%;
   float: left;
   text-align: center;
+  cursor: pointer;
 }
 
 .calendar-header-right {
@@ -34,6 +35,10 @@
 }
 
 .calendar-header-left:hover {
+  background-color: green;
+}
+
+.calendar-header-center:hover {
   background-color: green;
 }
 

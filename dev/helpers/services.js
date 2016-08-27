@@ -22,13 +22,13 @@ angular.module('mfNotebook.service', [])
         return currentDate.format();
       },
       setDate: function(date) {
-	       currentDate.set('date', date);
+	       currentDate.date(date);
       },
       setMonth: function(month) {
-	       currentDate.set('month', month);
+	       currentDate.month(month);
       },
       setYear: function(year) {
-	       currentDate.set('year', year);
+	       currentDate.year(year);
       },
       incrementMonth: function() {
 	       currentDate.add(1, 'month');

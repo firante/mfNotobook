@@ -1,7 +1,7 @@
 import angular from 'angular';
 import moment from 'moment';
 
-exports.getDayMatrix = function(dateValue) {
+export function getDayMatrix (dateValue) {
   let result = [];
   let date = moment(dateValue).startOf('month');
 
@@ -26,11 +26,25 @@ exports.getDayMatrix = function(dateValue) {
   return result;
 }
 
-exports.getMonthMatrix = function() {
+export function getMonthMatrix () {
   let result = [
     ['JAN','FEB','MAR','APR'],
     ['MAY','JUN','JUL','AUG'],
     ['SEP','OCT','NOV','DEC']
   ];
   return result;
-}
+};
+
+export function getYearMatrix (year) {
+  let result = [];
+  year = year - 12;
+  for (let i = 0; i < 5; i ++) {
+    let row = [];
+    for (let j = 0; j < 5; j ++) {
+      row.push(year);
+      year++;
+    }
+    result.push(row);
+  }
+  return result;
+};
